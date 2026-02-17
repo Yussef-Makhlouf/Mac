@@ -55,7 +55,7 @@ const swaggerSpec = swaggerJSDoc({
         description: "Local Server",
       },
       {
-        url: "https://mac-3la-allah.vercel.app/",
+        url: "https://macc-fm.com/api/v1",
         description: "Production Server",
       },
     ],
