@@ -11,7 +11,7 @@ export const multerCloudFunction = (allowedExtensionsArr) => {
   const storage = multer.memoryStorage();
 
   const fileFilter = (req, file, cb) => {
- 
+
     const isMimeAllowed = allowedExtensionsArr.includes(file.mimetype);
 
     const isPdfByName =
@@ -30,5 +30,22 @@ export const multerCloudFunction = (allowedExtensionsArr) => {
   return multer({
     storage,
     fileFilter,
+    limits: {
+      fileSize: 10 * 1024 * 1024, // 10MB limit
+      fieldSize: 10 * 1024 * 1024 // 10MB for any field
+    }
   });
+};
+
+export const handleMulterError = (err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(413).json({ message: 'File is too large. Maximum size is 10MB.' });
+    }
+    return res.status(400).json({ message: err.message });
+  }
+  if (err) {
+    return res.status(400).json({ message: err.message });
+  }
+  next();
 };

@@ -2,6 +2,8 @@ import { multerCloudFunction } from '../../services/multerCloud.js';
 import { allowedExtensions } from '../../utilities/allowedExtensions.js';
 import * as userCon from './auth.controller.js';
 import { Router } from 'express';
+import { isAuth } from '../../middleware/isAuth.js';
+import { systemRoles } from '../../utilities/systemRole.js';
 
 const userRouter = Router();
 
@@ -79,7 +81,7 @@ userRouter.post('/login', userCon.login);
  *       200:
  *         description: List of all users
  */
-userRouter.get('/', userCon.getAllUsers);
+userRouter.get('/', isAuth([systemRoles.ADMIN, systemRoles.HR]), userCon.getAllUsers);
 
 /**
  * @swagger
@@ -123,7 +125,7 @@ userRouter.get('/:id', userCon.getOneUsers);
  *       201:
  *         description: User added successfully
  */
-userRouter.post('/add', multerCloudFunction(allowedExtensions.Image).single("image"), userCon.addUser);
+userRouter.post('/add', isAuth([systemRoles.ADMIN, systemRoles.HR]), multerCloudFunction(allowedExtensions.Image).single("image"), userCon.addUser);
 
 /**
  * @swagger
@@ -163,6 +165,7 @@ userRouter.post('/add', multerCloudFunction(allowedExtensions.Image).single("ima
  */
 userRouter.put(
   '/:id',
+  isAuth([systemRoles.ADMIN, systemRoles.HR]),
   multerCloudFunction(allowedExtensions.Image).single("image"),
   userCon.UpdateUser
 );
@@ -183,7 +186,7 @@ userRouter.put(
  *       200:
  *         description: User deleted successfully
  */
-userRouter.delete('/:id', userCon.deleteUser);
+userRouter.delete('/:id', isAuth([systemRoles.ADMIN]), userCon.deleteUser);
 
 /**
  * @swagger
